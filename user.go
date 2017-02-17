@@ -1,6 +1,9 @@
 package intercom
 
-import "fmt"
+import (
+	"fmt"
+	"encoding/json"
+)
 
 // UserService handles interactions with the API through a UserRepository.
 type UserService struct {
@@ -66,10 +69,10 @@ type SocialProfileList struct {
 
 // SocialProfile represents a social account for a User.
 type SocialProfile struct {
-	Name     string `json:"name,omitempty"`
-	ID       string `json:"id,omitempty"`
-	Username string `json:"username,omitempty"`
-	URL      string `json:"url,omitempty"`
+	Name     string      `json:"name,omitempty"`
+	ID       json.Number `json:"id,omitempty"`
+	Username string      `json:"username,omitempty"`
+	URL      string      `json:"url,omitempty"`
 }
 
 // UserIdentifiers are used to identify Users in Intercom.
@@ -88,6 +91,7 @@ type userListParams struct {
 	PageParams
 	SegmentID string `url:"segment_id,omitempty"`
 	TagID     string `url:"tag_id,omitempty"`
+	Sort      string `url:"sort,omitempty"`
 }
 
 type scrollParams struct {
@@ -131,6 +135,11 @@ func (u *UserService) ListBySegment(segmentID string, params PageParams) (UserLi
 // List Users By Tag.
 func (u *UserService) ListByTag(tagID string, params PageParams) (UserList, error) {
 	return u.Repository.list(userListParams{PageParams: params, TagID: tagID})
+}
+
+// List Users Sorted.
+func (u *UserService) ListSorted(sortBy string, params PageParams) (UserList, error) {
+	return u.Repository.list(userListParams{PageParams: params, Sort: sortBy})
 }
 
 // Save a User, creating or updating them.
