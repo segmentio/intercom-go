@@ -1,15 +1,16 @@
 package intercom
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
 // Admin represents an Admin in Intercom.
 type Admin struct {
-	ID    string `json:"id"`
-	Type  string `json:"type"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID    json.Number `json:"id"`
+	Type  string      `json:"type"`
+	Name  string      `json:"name"`
+	Email string      `json:"email"`
 }
 
 // AdminList represents an object holding list of Admins
@@ -36,7 +37,7 @@ func (a Admin) IsNobodyAdmin() bool {
 func (a Admin) MessageAddress() MessageAddress {
 	return MessageAddress{
 		Type: "admin",
-		ID:   a.ID,
+		ID:   a.ID.String(),
 	}
 }
 
