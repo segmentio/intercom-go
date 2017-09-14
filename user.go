@@ -1,8 +1,9 @@
 package intercom
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"strconv"
 )
 
 // UserService handles interactions with the API through a UserRepository.
@@ -12,8 +13,8 @@ type UserService struct {
 
 // UserList holds a list of Users and paging information
 type UserList struct {
-	Pages PageParams
-	Users []User
+	Pages       PageParams
+	Users       []User
 	ScrollParam string `json:"scroll_param,omitempty"`
 }
 
@@ -62,17 +63,47 @@ type LocationData struct {
 	CountryCode   string  `json:"country_code,omitempty"`
 }
 
-// SocialProfile list is a list of SocialProfiles for a User.
+// SocialProfileList is a list of SocialProfiles for a User.
 type SocialProfileList struct {
 	SocialProfiles []SocialProfile `json:"social_profiles,omitempty"`
 }
 
 // SocialProfile represents a social account for a User.
 type SocialProfile struct {
-	Name     string      `json:"name,omitempty"`
-	ID       json.Number `json:"id,omitempty"`
-	Username string      `json:"username,omitempty"`
-	URL      string      `json:"url,omitempty"`
+	Name     string `json:"name,omitempty"`
+	ID       string `json:"id,omitempty"`
+	Username string `json:"username,omitempty"`
+	URL      string `json:"url,omitempty"`
+}
+
+// UnmarshalJSON custom SocialProfile unmarshaller
+func (sp *SocialProfile) UnmarshalJSON(data []byte) error {
+	s := struct {
+		Name     string      `json:"name"`
+		ID       interface{} `json:"id"`
+		Username interface{} `json:"username"`
+		URL      string      `json:"url"`
+	}{}
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	sp.Name = s.Name
+	sp.URL = s.URL
+
+	switch v := s.ID.(type) {
+	case string:
+		sp.ID = v
+	case float64:
+		sp.ID = strconv.FormatFloat(v, 'f', -1, 64)
+	}
+
+	switch v := s.Username.(type) {
+	case string:
+		sp.Username = v
+	case float64:
+		sp.Username = strconv.FormatFloat(v, 'f', -1, 64)
+	}
+	return nil
 }
 
 // UserIdentifiers are used to identify Users in Intercom.
@@ -95,7 +126,7 @@ type userListParams struct {
 }
 
 type scrollParams struct {
-	ScrollParam  string `url:"scroll_param,omitempty"`
+	ScrollParam string `url:"scroll_param,omitempty"`
 }
 
 // FindByID looks up a User by their Intercom ID.
@@ -124,7 +155,7 @@ func (u *UserService) List(params PageParams) (UserList, error) {
 
 // List all Users for App via Scroll API
 func (u *UserService) Scroll(scrollParam string) (UserList, error) {
-       return u.Repository.scroll(scrollParam)
+	return u.Repository.scroll(scrollParam)
 }
 
 // List Users by Segment.

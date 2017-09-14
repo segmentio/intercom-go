@@ -73,7 +73,7 @@ func (c *ConversationService) ListByAdmin(admin *Admin, state ConversationListSt
 	params := conversationListParams{
 		PageParams: pageParams,
 		Type:       "admin",
-		AdminID:    admin.ID.String(),
+		AdminID:    admin.ID,
 	}
 	if state == SHOW_OPEN {
 		params.Open = Bool(true)

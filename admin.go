@@ -3,14 +3,39 @@ package intercom
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 // Admin represents an Admin in Intercom.
 type Admin struct {
-	ID    json.Number `json:"id"`
-	Type  string      `json:"type"`
-	Name  string      `json:"name"`
-	Email string      `json:"email"`
+	ID    string `json:"id"`
+	Type  string `json:"type"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+// UnmarshalJSON custom SocialProfile unmarshaller
+func (a *Admin) UnmarshalJSON(data []byte) error {
+	s := struct {
+		ID    interface{} `json:"id"`
+		Type  string      `json:"type"`
+		Name  string      `json:"name"`
+		Email string      `json:"email"`
+	}{}
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	a.Type = s.Type
+	a.Name = s.Name
+	a.Email = s.Email
+
+	switch v := s.ID.(type) {
+	case string:
+		a.ID = v
+	case float64:
+		a.ID = strconv.FormatFloat(v, 'f', -1, 64)
+	}
+	return nil
 }
 
 // AdminList represents an object holding list of Admins
@@ -37,7 +62,7 @@ func (a Admin) IsNobodyAdmin() bool {
 func (a Admin) MessageAddress() MessageAddress {
 	return MessageAddress{
 		Type: "admin",
-		ID:   a.ID.String(),
+		ID:   a.ID,
 	}
 }
 
