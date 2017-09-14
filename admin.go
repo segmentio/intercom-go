@@ -3,7 +3,6 @@ package intercom
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strconv"
 )
 
@@ -30,13 +29,11 @@ func (a *Admin) UnmarshalJSON(data []byte) error {
 	a.Name = s.Name
 	a.Email = s.Email
 
-	// only 3 possible combinations nil, string, float64
-	if s.ID != nil {
-		if reflect.TypeOf(s.ID).Kind() == reflect.Float64 {
-			a.ID = strconv.FormatFloat(s.ID.(float64), 'f', -1, 64)
-		} else {
-			a.ID = s.ID.(string)
-		}
+	switch v := s.ID.(type) {
+	case string:
+		a.ID = v
+	case float64:
+		a.ID = strconv.FormatFloat(v, 'f', -1, 64)
 	}
 	return nil
 }

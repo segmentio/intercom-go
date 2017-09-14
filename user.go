@@ -3,7 +3,6 @@ package intercom
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strconv"
 )
 
@@ -91,23 +90,19 @@ func (sp *SocialProfile) UnmarshalJSON(data []byte) error {
 	sp.Name = s.Name
 	sp.URL = s.URL
 
-	// only 3 possible combinations nil, string, float64
-	if s.ID != nil {
-		if reflect.TypeOf(s.ID).Kind() == reflect.Float64 {
-			sp.ID = strconv.FormatFloat(s.ID.(float64), 'f', -1, 64)
-		} else {
-			sp.ID = s.ID.(string)
-		}
+	switch v := s.ID.(type) {
+	case string:
+		sp.ID = v
+	case float64:
+		sp.ID = strconv.FormatFloat(v, 'f', -1, 64)
 	}
 
-	if s.Username != nil {
-		if reflect.TypeOf(s.Username).Kind() == reflect.Float64 {
-			sp.Username = strconv.FormatFloat(s.Username.(float64), 'f', -1, 64)
-		} else {
-			sp.Username = s.Username.(string)
-		}
+	switch v := s.Username.(type) {
+	case string:
+		sp.Username = v
+	case float64:
+		sp.Username = strconv.FormatFloat(v, 'f', -1, 64)
 	}
-
 	return nil
 }
 
