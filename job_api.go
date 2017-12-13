@@ -10,7 +10,7 @@ import (
 // JobRepository defines the interface for working with Jobs.
 type JobRepository interface {
 	save(job *JobRequest) (JobResponse, error)
-	find(id string) (JobResponse, error)
+	find(id string) (*JobResponse, error)
 }
 
 // JobAPI implements TagRepository
@@ -36,12 +36,8 @@ func (api JobAPI) save(job *JobRequest) (JobResponse, error) {
 	return savedJob, err
 }
 
-func (api JobAPI) find(id string) (JobResponse, error) {
-	fetchedJob := JobResponse{}
-	data, err := api.httpClient.Get(fmt.Sprintf("/jobs/%s", id), nil)
-	if err != nil {
-		return fetchedJob, err
-	}
-	err = json.Unmarshal(data, &fetchedJob)
-	return fetchedJob, err
+func (api JobAPI) find(id string) (*JobResponse, error) {
+	var resp *JobResponse
+	err := api.httpClient.Get(fmt.Sprintf("/jobs/%s", id), nil, &resp)
+	return resp, err
 }

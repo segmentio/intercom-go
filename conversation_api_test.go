@@ -1,6 +1,7 @@
 package intercom
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"testing"
 )
@@ -119,14 +120,18 @@ type TestConversationHTTPClient struct {
 	lastQueryParams interface{}
 }
 
-func (t *TestConversationHTTPClient) Get(uri string, queryParams interface{}) ([]byte, error) {
+func (t *TestConversationHTTPClient) Get(uri string, queryParams interface{}, v interface{}) error {
 	if t.testFunc != nil {
 		t.testFunc(t.t, queryParams)
 	}
 	if t.expectedURI != uri {
 		t.t.Errorf("Wrong endpoint called")
 	}
-	return ioutil.ReadFile(t.fixtureFilename)
+	b, err := ioutil.ReadFile(t.fixtureFilename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, v)
 }
 
 func (t *TestConversationHTTPClient) Post(uri string, dataObject interface{}) ([]byte, error) {

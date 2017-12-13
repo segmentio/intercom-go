@@ -22,12 +22,12 @@ type SegmentList struct {
 }
 
 // List all Segments for the App
-func (t *SegmentService) List() (SegmentList, error) {
+func (t *SegmentService) List() (*SegmentList, error) {
 	return t.Repository.list()
 }
 
 // Find a particular Segment in the App
-func (t *SegmentService) Find(id string) (Segment, error) {
+func (t *SegmentService) Find(id string) (*Segment, error) {
 	return t.Repository.find(id)
 }
 

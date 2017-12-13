@@ -94,16 +94,16 @@ type TestContactAPI struct {
 	t *testing.T
 }
 
-func (t TestContactAPI) find(params UserIdentifiers) (Contact, error) {
-	return Contact{ID: params.ID, Email: params.Email, UserID: params.UserID}, nil
+func (t TestContactAPI) find(params UserIdentifiers) (*Contact, error) {
+	return &Contact{ID: params.ID, Email: params.Email, UserID: params.UserID}, nil
 }
 
-func (t TestContactAPI) list(params contactListParams) (ContactList, error) {
-	return ContactList{Contacts: []Contact{Contact{ID: "46adad3f09126dca", Email: "jamie@example.io", UserID: "aa123"}}}, nil
+func (t TestContactAPI) list(params contactListParams) (*ContactList, error) {
+	return &ContactList{Contacts: []Contact{Contact{ID: "46adad3f09126dca", Email: "jamie@example.io", UserID: "aa123"}}}, nil
 }
 
-func (t TestContactAPI) scroll(scrollParam string) (ContactList, error) {
-	return ContactList{Contacts: []Contact{Contact{ID: "46adad3f09126dca", Email: "jamie@example.io", UserID: "aa123"}}}, nil
+func (t TestContactAPI) scroll(scrollParam string) (*ContactList, error) {
+	return &ContactList{Contacts: []Contact{Contact{ID: "46adad3f09126dca", Email: "jamie@example.io", UserID: "aa123"}}}, nil
 }
 
 func (t TestContactAPI) create(c *Contact) (Contact, error) {

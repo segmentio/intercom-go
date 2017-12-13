@@ -75,7 +75,7 @@ func (js *JobService) AppendEvents(id string, items ...*JobItem) (JobResponse, e
 }
 
 // Find existing Job
-func (js *JobService) Find(id string) (JobResponse, error) {
+func (js *JobService) Find(id string) (*JobResponse, error) {
 	return js.Repository.find(id)
 }
 

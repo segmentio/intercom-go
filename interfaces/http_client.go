@@ -11,11 +11,13 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
+var _ HTTPClient = (*IntercomHTTPClient)(nil)
+
 type HTTPClient interface {
-	Get(string, interface{}) ([]byte, error)
-	Post(string, interface{}) ([]byte, error)
-	Patch(string, interface{}) ([]byte, error)
-	Delete(string, interface{}) ([]byte, error)
+	Get(url string, queryParams interface{}, v interface{}) error
+	Post(url string, queryParams interface{}) ([]byte, error)
+	Patch(url string, queryParams interface{}) ([]byte, error)
+	Delete(url string, queryParams interface{}) ([]byte, error)
 }
 
 type IntercomHTTPClient struct {
@@ -35,7 +37,7 @@ func (c IntercomHTTPClient) UserAgentHeader() string {
 	return fmt.Sprintf("intercom-go/%s", *c.ClientVersion)
 }
 
-func (c IntercomHTTPClient) Get(url string, queryParams interface{}) ([]byte, error) {
+func (c IntercomHTTPClient) Get(url string, queryParams interface{}, v interface{}) error {
 	// Setup request
 	req, _ := http.NewRequest("GET", *c.BaseURI+url, nil)
 	req.SetBasicAuth(c.AppID, c.APIKey)
@@ -49,19 +51,14 @@ func (c IntercomHTTPClient) Get(url string, queryParams interface{}) ([]byte, er
 	// Do request
 	resp, err := c.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
-	// Read response
-	data, err := c.readAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
 	if resp.StatusCode >= 400 {
-		return nil, c.parseResponseError(data, resp.StatusCode)
+		return c.parseReaderResponseError(resp.Body, resp.StatusCode)
 	}
-	return data, err
+	return json.NewDecoder(resp.Body).Decode(v)
 }
 
 func addQueryParams(req *http.Request, params interface{}) {
@@ -154,6 +151,20 @@ type IntercomError interface {
 func (c IntercomHTTPClient) parseResponseError(data []byte, statusCode int) IntercomError {
 	errorList := HTTPErrorList{}
 	err := json.Unmarshal(data, &errorList)
+	if err != nil {
+		return NewUnknownHTTPError(statusCode)
+	}
+	if len(errorList.Errors) == 0 {
+		return NewUnknownHTTPError(statusCode)
+	}
+	httpError := errorList.Errors[0]
+	httpError.StatusCode = statusCode
+	return httpError // only care about the first
+}
+
+func (c IntercomHTTPClient) parseReaderResponseError(data io.Reader, statusCode int) IntercomError {
+	errorList := HTTPErrorList{}
+	err := json.NewDecoder(data).Decode(&errorList)
 	if err != nil {
 		return NewUnknownHTTPError(statusCode)
 	}

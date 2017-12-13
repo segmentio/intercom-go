@@ -1,6 +1,7 @@
 package intercom
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"testing"
 )
@@ -42,9 +43,13 @@ type TestSegmentHTTPClient struct {
 	expectedURI     string
 }
 
-func (t TestSegmentHTTPClient) Get(uri string, params interface{}) ([]byte, error) {
+func (t TestSegmentHTTPClient) Get(uri string, params interface{}, v interface{}) error {
 	if uri != t.expectedURI {
 		t.t.Errorf("Wrong endpoint called")
 	}
-	return ioutil.ReadFile(t.fixtureFilename)
+	b, err := ioutil.ReadFile(t.fixtureFilename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, v)
 }

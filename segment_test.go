@@ -21,10 +21,10 @@ type TestSegmentAPI struct {
 	t *testing.T
 }
 
-func (t TestSegmentAPI) list() (SegmentList, error) {
-	return SegmentList{Segments: []Segment{Segment{ID: "de412cad4", Name: "My Tag"}}}, nil
+func (t TestSegmentAPI) list() (*SegmentList, error) {
+	return &SegmentList{Segments: []Segment{Segment{ID: "de412cad4", Name: "My Tag"}}}, nil
 }
 
-func (t TestSegmentAPI) find(id string) (Segment, error) {
-	return Segment{ID: id}, nil
+func (t TestSegmentAPI) find(id string) (*Segment, error) {
+	return &Segment{ID: id}, nil
 }

@@ -43,16 +43,16 @@ type TestCompanyAPI struct {
 	t *testing.T
 }
 
-func (t TestCompanyAPI) find(params CompanyIdentifiers) (Company, error) {
-	return Company{ID: params.ID, Name: params.Name, CompanyID: params.CompanyID}, nil
+func (t TestCompanyAPI) find(params CompanyIdentifiers) (*Company, error) {
+	return &Company{ID: params.ID, Name: params.Name, CompanyID: params.CompanyID}, nil
 }
 
-func (t TestCompanyAPI) list(params companyListParams) (CompanyList, error) {
-	return CompanyList{Companies: []Company{Company{ID: "46adad3f09126dca", Name: "My Co", CompanyID: "aa123"}}}, nil
+func (t TestCompanyAPI) list(params companyListParams) (*CompanyList, error) {
+	return &CompanyList{Companies: []Company{Company{ID: "46adad3f09126dca", Name: "My Co", CompanyID: "aa123"}}}, nil
 }
 
-func (t TestCompanyAPI) scroll(scrollParam string) (CompanyList, error) {
-	return CompanyList{Companies: []Company{Company{ID: "46adad3f09126dca", Name: "My Co", CompanyID: "aa123"}}}, nil
+func (t TestCompanyAPI) scroll(scrollParam string) (*CompanyList, error) {
+	return &CompanyList{Companies: []Company{Company{ID: "46adad3f09126dca", Name: "My Co", CompanyID: "aa123"}}}, nil
 }
 
 func (t TestCompanyAPI) save(company *Company) (Company, error) {

@@ -9,7 +9,7 @@ import (
 
 // TagRepository defines the interface for working with Tags through the API.
 type TagRepository interface {
-	list() (TagList, error)
+	list() (*TagList, error)
 	save(tag *Tag) (Tag, error)
 	delete(id string) error
 	tag(tagList *TaggingList) (Tag, error)
@@ -20,14 +20,10 @@ type TagAPI struct {
 	httpClient interfaces.HTTPClient
 }
 
-func (api TagAPI) list() (TagList, error) {
-	tagList := TagList{}
-	data, err := api.httpClient.Get("/tags", nil)
-	if err != nil {
-		return tagList, err
-	}
-	err = json.Unmarshal(data, &tagList)
-	return tagList, err
+func (api TagAPI) list() (*TagList, error) {
+	var list *TagList
+	err := api.httpClient.Get("/tags", nil, &list)
+	return list, err
 }
 
 func (api TagAPI) save(tag *Tag) (Tag, error) {

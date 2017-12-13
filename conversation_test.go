@@ -164,15 +164,15 @@ type TestConversationAPI struct {
 	t        *testing.T
 }
 
-func (t TestConversationAPI) list(params conversationListParams) (ConversationList, error) {
+func (t TestConversationAPI) list(params conversationListParams) (*ConversationList, error) {
 	if t.testFunc != nil {
 		t.testFunc(t.t, params)
 	}
-	return ConversationList{Conversations: []Conversation{Conversation{ID: "123"}}, Pages: PageParams{Page: 1, PerPage: 20}}, nil
+	return &ConversationList{Conversations: []Conversation{Conversation{ID: "123"}}, Pages: PageParams{Page: 1, PerPage: 20}}, nil
 }
 
-func (t TestConversationAPI) find(id string) (Conversation, error) {
-	return Conversation{ID: "123"}, nil
+func (t TestConversationAPI) find(id string) (*Conversation, error) {
+	return &Conversation{ID: "123"}, nil
 }
 
 func (t TestConversationAPI) read(id string) (Conversation, error) {

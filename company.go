@@ -55,42 +55,42 @@ type companyListParams struct {
 }
 
 // FindByID finds a Company using their Intercom ID
-func (c *CompanyService) FindByID(id string) (Company, error) {
+func (c *CompanyService) FindByID(id string) (*Company, error) {
 	return c.findWithIdentifiers(CompanyIdentifiers{ID: id})
 }
 
 // FindByCompanyID finds a Company using their CompanyID
 // CompanyID is a customer-defined field
-func (c *CompanyService) FindByCompanyID(companyID string) (Company, error) {
+func (c *CompanyService) FindByCompanyID(companyID string) (*Company, error) {
 	return c.findWithIdentifiers(CompanyIdentifiers{CompanyID: companyID})
 }
 
 // FindByName finds a Company using their Name
-func (c *CompanyService) FindByName(name string) (Company, error) {
+func (c *CompanyService) FindByName(name string) (*Company, error) {
 	return c.findWithIdentifiers(CompanyIdentifiers{Name: name})
 }
 
-func (c *CompanyService) findWithIdentifiers(identifiers CompanyIdentifiers) (Company, error) {
+func (c *CompanyService) findWithIdentifiers(identifiers CompanyIdentifiers) (*Company, error) {
 	return c.Repository.find(identifiers)
 }
 
 // List Companies
-func (c *CompanyService) List(params PageParams) (CompanyList, error) {
+func (c *CompanyService) List(params PageParams) (*CompanyList, error) {
 	return c.Repository.list(companyListParams{PageParams: params})
 }
 
 // List Companies by Segment
-func (c *CompanyService) ListBySegment(segmentID string, params PageParams) (CompanyList, error) {
+func (c *CompanyService) ListBySegment(segmentID string, params PageParams) (*CompanyList, error) {
 	return c.Repository.list(companyListParams{PageParams: params, SegmentID: segmentID})
 }
 
 // List Companies by Tag
-func (c *CompanyService) ListByTag(tagID string, params PageParams) (CompanyList, error) {
+func (c *CompanyService) ListByTag(tagID string, params PageParams) (*CompanyList, error) {
 	return c.Repository.list(companyListParams{PageParams: params, TagID: tagID})
 }
 
 // List all Companies for App via Scroll API
-func (c *CompanyService) Scroll(scrollParam string) (CompanyList, error) {
+func (c *CompanyService) Scroll(scrollParam string) (*CompanyList, error) {
 	return c.Repository.scroll(scrollParam)
 }
 

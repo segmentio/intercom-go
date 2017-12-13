@@ -1,6 +1,7 @@
 package intercom
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"testing"
 )
@@ -47,11 +48,15 @@ func TestAPITagTagging(t *testing.T) {
 	}
 }
 
-func (t TestTagHTTPClient) Get(uri string, params interface{}) ([]byte, error) {
+func (t TestTagHTTPClient) Get(uri string, params interface{}, v interface{}) error {
 	if uri != t.expectedURI {
 		t.t.Errorf("Wrong endpoint called")
 	}
-	return ioutil.ReadFile(t.fixtureFilename)
+	b, err := ioutil.ReadFile(t.fixtureFilename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, v)
 }
 
 func (t TestTagHTTPClient) Post(uri string, body interface{}) ([]byte, error) {
