@@ -19,7 +19,7 @@ type TagList struct {
 }
 
 // List all Tags for the App
-func (t *TagService) List() (TagList, error) {
+func (t *TagService) List() (*TagList, error) {
 	return t.Repository.list()
 }
 

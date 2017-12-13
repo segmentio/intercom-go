@@ -10,9 +10,9 @@ import (
 
 // CompanyRepository defines the interface for working with Companies through the API.
 type CompanyRepository interface {
-	find(CompanyIdentifiers) (Company, error)
-	list(companyListParams) (CompanyList, error)
-	scroll(scrollParam string) (CompanyList, error)
+	find(CompanyIdentifiers) (*Company, error)
+	list(companyListParams) (*CompanyList, error)
+	scroll(scrollParam string) (*CompanyList, error)
 	save(*Company) (Company, error)
 }
 
@@ -31,45 +31,33 @@ type requestCompany struct {
 	CustomAttributes map[string]interface{} `json:"custom_attributes,omitempty"`
 }
 
-func (api CompanyAPI) find(params CompanyIdentifiers) (Company, error) {
-	company := Company{}
-	data, err := api.getClientForFind(params)
-	if err != nil {
-		return company, err
-	}
-	err = json.Unmarshal(data, &company)
+func (api CompanyAPI) find(params CompanyIdentifiers) (*Company, error) {
+	var company *Company
+	err := api.getClientForFind(params, &company)
 	return company, err
 }
 
-func (api CompanyAPI) getClientForFind(params CompanyIdentifiers) ([]byte, error) {
+func (api CompanyAPI) getClientForFind(params CompanyIdentifiers, v interface{}) error {
 	switch {
 	case params.ID != "":
-		return api.httpClient.Get(fmt.Sprintf("/companies/%s", params.ID), nil)
+		return api.httpClient.Get(fmt.Sprintf("/companies/%s", params.ID), nil, v)
 	case params.CompanyID != "", params.Name != "":
-		return api.httpClient.Get("/companies", params)
+		return api.httpClient.Get("/companies", params, v)
 	}
-	return nil, errors.New("Missing Company Identifier")
+	return errors.New("Missing Company Identifier")
 }
 
-func (api CompanyAPI) list(params companyListParams) (CompanyList, error) {
-	companyList := CompanyList{}
-	data, err := api.httpClient.Get("/companies", params)
-	if err != nil {
-		return companyList, err
-	}
-	err = json.Unmarshal(data, &companyList)
-	return companyList, err
+func (api CompanyAPI) list(params companyListParams) (*CompanyList, error) {
+	var list *CompanyList
+	err := api.httpClient.Get("/companies", params, &list)
+	return list, err
 }
 
-func (api CompanyAPI) scroll(scrollParam string) (CompanyList, error) {
-	companyList := CompanyList{}
-	params := scrollParams{ScrollParam: scrollParam }
-	data, err := api.httpClient.Get("/companies/scroll", params)
-	if err != nil {
-		return companyList, err
-	}
-	err = json.Unmarshal(data, &companyList)
-	return companyList, err
+func (api CompanyAPI) scroll(scrollParam string) (*CompanyList, error) {
+	var list *CompanyList
+	params := scrollParams{ScrollParam: scrollParam}
+	err := api.httpClient.Get("/companies/scroll", params, &list)
+	return list, err
 }
 
 func (api CompanyAPI) save(company *Company) (Company, error) {

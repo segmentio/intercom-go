@@ -31,8 +31,8 @@ type TestTagAPI struct {
 	t *testing.T
 }
 
-func (t TestTagAPI) list() (TagList, error) {
-	return TagList{Tags: []Tag{Tag{ID: "24", Name: "My Tag"}}}, nil
+func (t TestTagAPI) list() (*TagList, error) {
+	return &TagList{Tags: []Tag{Tag{ID: "24", Name: "My Tag"}}}, nil
 }
 
 func (t TestTagAPI) save(tag *Tag) (Tag, error) {

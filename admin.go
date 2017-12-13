@@ -49,7 +49,7 @@ type AdminService struct {
 }
 
 // List lists the Admins associated with your App.
-func (c *AdminService) List() (AdminList, error) {
+func (c *AdminService) List() (*AdminList, error) {
 	return c.Repository.list()
 }
 

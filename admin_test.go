@@ -35,6 +35,6 @@ type TestAdminAPI struct {
 	t *testing.T
 }
 
-func (t TestAdminAPI) list() (AdminList, error) {
-	return AdminList{Admins: []Admin{Admin{ID: "213"}}}, nil
+func (t TestAdminAPI) list() (*AdminList, error) {
+	return &AdminList{Admins: []Admin{Admin{ID: "213"}}}, nil
 }

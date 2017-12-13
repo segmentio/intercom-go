@@ -130,46 +130,46 @@ type scrollParams struct {
 }
 
 // FindByID looks up a User by their Intercom ID.
-func (u *UserService) FindByID(id string) (User, error) {
+func (u *UserService) FindByID(id string) (*User, error) {
 	return u.findWithIdentifiers(UserIdentifiers{ID: id})
 }
 
 // FindByUserID looks up a User by their UserID (customer supplied).
-func (u *UserService) FindByUserID(userID string) (User, error) {
+func (u *UserService) FindByUserID(userID string) (*User, error) {
 	return u.findWithIdentifiers(UserIdentifiers{UserID: userID})
 }
 
 // FindByEmail looks up a User by their Email.
-func (u *UserService) FindByEmail(email string) (User, error) {
+func (u *UserService) FindByEmail(email string) (*User, error) {
 	return u.findWithIdentifiers(UserIdentifiers{Email: email})
 }
 
-func (u *UserService) findWithIdentifiers(identifiers UserIdentifiers) (User, error) {
+func (u *UserService) findWithIdentifiers(identifiers UserIdentifiers) (*User, error) {
 	return u.Repository.find(identifiers)
 }
 
 // List all Users for App.
-func (u *UserService) List(params PageParams) (UserList, error) {
+func (u *UserService) List(params PageParams) (*UserList, error) {
 	return u.Repository.list(userListParams{PageParams: params})
 }
 
 // List all Users for App via Scroll API
-func (u *UserService) Scroll(scrollParam string) (UserList, error) {
+func (u *UserService) Scroll(scrollParam string) (*UserList, error) {
 	return u.Repository.scroll(scrollParam)
 }
 
 // List Users by Segment.
-func (u *UserService) ListBySegment(segmentID string, params PageParams) (UserList, error) {
+func (u *UserService) ListBySegment(segmentID string, params PageParams) (*UserList, error) {
 	return u.Repository.list(userListParams{PageParams: params, SegmentID: segmentID})
 }
 
 // List Users By Tag.
-func (u *UserService) ListByTag(tagID string, params PageParams) (UserList, error) {
+func (u *UserService) ListByTag(tagID string, params PageParams) (*UserList, error) {
 	return u.Repository.list(userListParams{PageParams: params, TagID: tagID})
 }
 
 // List Users Sorted.
-func (u *UserService) ListSorted(sortBy string, params PageParams) (UserList, error) {
+func (u *UserService) ListSorted(sortBy string, params PageParams) (*UserList, error) {
 	return u.Repository.list(userListParams{PageParams: params, Sort: sortBy})
 }
 

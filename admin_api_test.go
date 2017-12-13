@@ -1,6 +1,7 @@
 package intercom
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"testing"
 )
@@ -21,9 +22,13 @@ type TestAdminHTTPClient struct {
 	expectedURI     string
 }
 
-func (t TestAdminHTTPClient) Get(uri string, queryParams interface{}) ([]byte, error) {
+func (t TestAdminHTTPClient) Get(uri string, queryParams interface{}, v interface{}) error {
 	if t.expectedURI != uri {
 		t.t.Errorf("URI was %s, expected %s", uri, t.expectedURI)
 	}
-	return ioutil.ReadFile(t.fixtureFilename)
+	b, err := ioutil.ReadFile(t.fixtureFilename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, v)
 }

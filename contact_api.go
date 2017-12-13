@@ -10,9 +10,9 @@ import (
 
 // ContactRepository defines the interface for working with Contacts through the API.
 type ContactRepository interface {
-	find(UserIdentifiers) (Contact, error)
-	list(contactListParams) (ContactList, error)
-	scroll(scrollParam string) (ContactList, error)
+	find(UserIdentifiers) (*Contact, error)
+	list(contactListParams) (*ContactList, error)
+	scroll(scrollParam string) (*ContactList, error)
 	create(*Contact) (Contact, error)
 	update(*Contact) (Contact, error)
 	convert(*Contact, *User) (User, error)
@@ -24,39 +24,33 @@ type ContactAPI struct {
 	httpClient interfaces.HTTPClient
 }
 
-func (api ContactAPI) find(params UserIdentifiers) (Contact, error) {
-	return unmarshalToContact(api.getClientForFind(params))
+func (api ContactAPI) find(params UserIdentifiers) (*Contact, error) {
+	var contact *Contact
+	err := api.getClientForFind(params, &contact)
+	return contact, err
 }
 
-func (api ContactAPI) getClientForFind(params UserIdentifiers) ([]byte, error) {
+func (api ContactAPI) getClientForFind(params UserIdentifiers, v interface{}) error {
 	switch {
 	case params.ID != "":
-		return api.httpClient.Get(fmt.Sprintf("/contacts/%s", params.ID), nil)
+		return api.httpClient.Get(fmt.Sprintf("/contacts/%s", params.ID), nil, v)
 	case params.UserID != "":
-		return api.httpClient.Get("/contacts", params)
+		return api.httpClient.Get("/contacts", params, v)
 	}
-	return nil, errors.New("Missing Contact Identifier")
+	return errors.New("Missing Contact Identifier")
 }
 
-func (api ContactAPI) list(params contactListParams) (ContactList, error) {
-	contactList := ContactList{}
-	data, err := api.httpClient.Get("/contacts", params)
-	if err != nil {
-		return contactList, err
-	}
-	err = json.Unmarshal(data, &contactList)
-	return contactList, err
+func (api ContactAPI) list(params contactListParams) (*ContactList, error) {
+	var list *ContactList
+	err := api.httpClient.Get("/contacts", params, &list)
+	return list, err
 }
 
-func (api ContactAPI) scroll(scrollParam string) (ContactList, error) {
-       contactList := ContactList{}
-       params := scrollParams{ ScrollParam: scrollParam }
-       data, err := api.httpClient.Get("/contacts/scroll", params)
-       if err != nil {
-               return contactList, err
-       }
-       err = json.Unmarshal(data, &contactList)
-       return contactList, err
+func (api ContactAPI) scroll(scrollParam string) (*ContactList, error) {
+	var list *ContactList
+	params := scrollParams{ScrollParam: scrollParam}
+	err := api.httpClient.Get("/contacts/scroll", params, &list)
+	return list, err
 }
 
 func (api ContactAPI) create(contact *Contact) (Contact, error) {

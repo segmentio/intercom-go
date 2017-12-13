@@ -49,6 +49,6 @@ func (api *TestJobRepository) save(job *JobRequest) (JobResponse, error) {
 	return JobResponse{}, nil
 }
 
-func (api *TestJobRepository) find(id string) (JobResponse, error) {
-	return JobResponse{}, nil
+func (api *TestJobRepository) find(id string) (*JobResponse, error) {
+	return &JobResponse{}, nil
 }

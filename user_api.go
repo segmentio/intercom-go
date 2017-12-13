@@ -10,9 +10,9 @@ import (
 
 // UserRepository defines the interface for working with Users through the API.
 type UserRepository interface {
-	find(UserIdentifiers) (User, error)
-	list(userListParams) (UserList, error)
-	scroll(scrollParam string) (UserList, error)
+	find(UserIdentifiers) (*User, error)
+	list(userListParams) (*UserList, error)
+	scroll(scrollParam string) (*UserList, error)
 	save(*User) (User, error)
 	delete(id string) (User, error)
 }
@@ -23,7 +23,7 @@ type UserAPI struct {
 }
 
 type requestScroll struct {
-	ScrollParam            string                 `json:"scroll_param,omitempty"`
+	ScrollParam string `json:"scroll_param,omitempty"`
 }
 type requestUser struct {
 	ID                     string                 `json:"id,omitempty"`
@@ -43,42 +43,33 @@ type requestUser struct {
 	LastSeenUserAgent      string                 `json:"last_seen_user_agent,omitempty"`
 }
 
-func (api UserAPI) find(params UserIdentifiers) (User, error) {
-	return unmarshalToUser(api.getClientForFind(params))
+func (api UserAPI) find(params UserIdentifiers) (*User, error) {
+	var user *User
+	err := api.getClientForFind(params, &user)
+	return user, err
 }
 
-func (api UserAPI) getClientForFind(params UserIdentifiers) ([]byte, error) {
+func (api UserAPI) getClientForFind(params UserIdentifiers, v interface{}) error {
 	switch {
 	case params.ID != "":
-		return api.httpClient.Get(fmt.Sprintf("/users/%s", params.ID), nil)
+		return api.httpClient.Get(fmt.Sprintf("/users/%s", params.ID), nil, v)
 	case params.UserID != "", params.Email != "":
-		return api.httpClient.Get("/users", params)
+		return api.httpClient.Get("/users", params, v)
 	}
-	return nil, errors.New("Missing User Identifier")
+	return errors.New("Missing User Identifier")
 }
 
-func (api UserAPI) list(params userListParams) (UserList, error) {
-	userList := UserList{}
-	data, err := api.httpClient.Get("/users", params)
-	if err != nil {
-		return userList, err
-	}
-	err = json.Unmarshal(data, &userList)
-	return userList, err
+func (api UserAPI) list(params userListParams) (*UserList, error) {
+	var list *UserList
+	err := api.httpClient.Get("/users", params, &list)
+	return list, err
 }
 
-func (api UserAPI) scroll(scrollParam string) (UserList, error) {
-       userList := UserList{}
-
-       url := "/users/scroll"
-       params := scrollParams{ ScrollParam: scrollParam }
-       data, err := api.httpClient.Get(url, params)
-
-       if err != nil {
-               return userList, err
-       }
-       err = json.Unmarshal(data, &userList)
-       return userList, err
+func (api UserAPI) scroll(scrollParam string) (*UserList, error) {
+	var list *UserList
+	params := scrollParams{ScrollParam: scrollParam}
+	err := api.httpClient.Get("/users/scroll", params, &list)
+	return list, err
 }
 
 func (api UserAPI) save(user *User) (User, error) {

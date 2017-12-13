@@ -64,12 +64,12 @@ const (
 )
 
 // List all Conversations
-func (c *ConversationService) ListAll(pageParams PageParams) (ConversationList, error) {
+func (c *ConversationService) ListAll(pageParams PageParams) (*ConversationList, error) {
 	return c.Repository.list(conversationListParams{PageParams: pageParams})
 }
 
 // List Conversations by Admin
-func (c *ConversationService) ListByAdmin(admin *Admin, state ConversationListState, pageParams PageParams) (ConversationList, error) {
+func (c *ConversationService) ListByAdmin(admin *Admin, state ConversationListState, pageParams PageParams) (*ConversationList, error) {
 	params := conversationListParams{
 		PageParams: pageParams,
 		Type:       "admin",
@@ -85,7 +85,7 @@ func (c *ConversationService) ListByAdmin(admin *Admin, state ConversationListSt
 }
 
 // List Conversations by User
-func (c *ConversationService) ListByUser(user *User, state ConversationListState, pageParams PageParams) (ConversationList, error) {
+func (c *ConversationService) ListByUser(user *User, state ConversationListState, pageParams PageParams) (*ConversationList, error) {
 	params := conversationListParams{
 		PageParams:     pageParams,
 		Type:           "user",
@@ -100,7 +100,7 @@ func (c *ConversationService) ListByUser(user *User, state ConversationListState
 }
 
 // Find Conversation by conversation id
-func (c *ConversationService) Find(id string) (Conversation, error) {
+func (c *ConversationService) Find(id string) (*Conversation, error) {
 	return c.Repository.find(id)
 }
 

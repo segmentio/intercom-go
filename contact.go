@@ -9,8 +9,8 @@ type ContactService struct {
 
 // ContactList holds a list of Contacts and paging information
 type ContactList struct {
-	Pages    PageParams
-	Contacts []Contact
+	Pages       PageParams
+	Contacts    []Contact
 	ScrollParam string `json:"scroll_param,omitempty"`
 }
 
@@ -49,41 +49,41 @@ type contactListParams struct {
 }
 
 // FindByID looks up a Contact by their Intercom ID.
-func (c *ContactService) FindByID(id string) (Contact, error) {
+func (c *ContactService) FindByID(id string) (*Contact, error) {
 	return c.findWithIdentifiers(UserIdentifiers{ID: id})
 }
 
 // FindByUserID looks up a Contact by their UserID (automatically generated server side).
-func (c *ContactService) FindByUserID(userID string) (Contact, error) {
+func (c *ContactService) FindByUserID(userID string) (*Contact, error) {
 	return c.findWithIdentifiers(UserIdentifiers{UserID: userID})
 }
 
-func (c *ContactService) findWithIdentifiers(identifiers UserIdentifiers) (Contact, error) {
+func (c *ContactService) findWithIdentifiers(identifiers UserIdentifiers) (*Contact, error) {
 	return c.Repository.find(identifiers)
 }
 
 // List all Contacts for App.
-func (c *ContactService) List(params PageParams) (ContactList, error) {
+func (c *ContactService) List(params PageParams) (*ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params})
 }
 
 // List all Contacts for App via Scroll API
-func (c *ContactService) Scroll(scrollParam string) (ContactList, error) {
-       return c.Repository.scroll(scrollParam)
+func (c *ContactService) Scroll(scrollParam string) (*ContactList, error) {
+	return c.Repository.scroll(scrollParam)
 }
 
 // ListByEmail looks up a list of Contacts by their Email.
-func (c *ContactService) ListByEmail(email string, params PageParams) (ContactList, error) {
+func (c *ContactService) ListByEmail(email string, params PageParams) (*ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params, Email: email})
 }
 
 // List Contacts by Segment.
-func (c *ContactService) ListBySegment(segmentID string, params PageParams) (ContactList, error) {
+func (c *ContactService) ListBySegment(segmentID string, params PageParams) (*ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params, SegmentID: segmentID})
 }
 
 // List Contacts By Tag.
-func (c *ContactService) ListByTag(tagID string, params PageParams) (ContactList, error) {
+func (c *ContactService) ListByTag(tagID string, params PageParams) (*ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params, TagID: tagID})
 }
 
